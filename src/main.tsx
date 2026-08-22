@@ -6,5 +6,7 @@ import './styles.css';
 import './appv2.css';
 import './admin-refinements.css';
 import './appv3.css';
-registerSW({immediate:true});
+import './pwa-controls.css';
+const updateSW=registerSW({immediate:true,onNeedRefresh(){window.dispatchEvent(new Event('acs-pwa-update'))},onOfflineReady(){window.dispatchEvent(new Event('acs-pwa-offline-ready'))}});
+(window as any).__ACS_UPDATE_SW__=updateSW;
 ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><App/></React.StrictMode>);
