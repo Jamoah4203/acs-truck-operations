@@ -1,12 +1,15 @@
 # ACS Truck Operations
 
-Mobile-first fleet, delivery, expense and maintenance operations PWA for Avenue Construction Supply GH Ltd.
+**Current release: v1.1.0**
+
+Production fleet, delivery, income/expense, maintenance, reporting and invoicing PWA for Avenue Construction Supply GH Ltd.
 
 ## Stack
 
 - React + TypeScript + Vite
 - Supabase Auth, PostgreSQL, Storage and Realtime
 - vite-plugin-pwa
+- jsPDF invoice/document generation
 - Docker + nginx production image
 
 ## Frontend setup
@@ -20,27 +23,49 @@ Mobile-first fleet, delivery, expense and maintenance operations PWA for Avenue 
 
 `https://truck.constructionsupplyghonline.com`
 
-The production host must serve HTTPS for PWA installation and should route SPA requests to `index.html`. The included `Dockerfile` and `nginx.conf` provide the production container setup.
+Production must use HTTPS for service workers and PWA installation. SPA requests must route back to `index.html`. The included Docker/nginx files support self-hosted deployment; the current frontend can also deploy through Vercel.
 
-## First account
+## PWA installation
 
-The database bootstrap makes the first authenticated profile the administrator. After the first admin exists, create/manage subsequent staff accounts according to their operational roles.
+- Chrome/Edge/Android: use the browser Install option or the in-app **Install ACS Truck** button when shown.
+- iPhone/iPad: Safari → Share → **Add to Home Screen**. The app displays this guidance when appropriate.
+- Installed copies run in standalone mode with ACS Truck branding.
+- New releases surface an in-app update prompt instead of silently leaving staff on an old cached build.
+- The service worker caches the application shell only; financial/API responses remain live from Supabase.
 
 ## Roles
 
-- `admin` — full operational and configuration access
+- `admin` — full operational, configuration and user-administration access
 - `operations` — deliveries, fleet and operational entries
 - `accounts` — financial/reporting access
 - `driver` — assigned delivery workflow and permitted field entries
 
+Inactive users are blocked at the application and database role layer.
+
+## Core modules
+
+- Dashboard
+- Income: deliveries, transport service and other income
+- Expenses: fuel, maintenance and other expenses
+- Reports: day/week/month/quarter/half-year/year with previous-period comparison
+- Fleet
+- Company/profile/user administration
+- Customer/vendor/category configuration
+- Invoice/PDF generation
+- Controlled document storage
+
 ## Financial model
 
-The database stores configurable income and expense categories. Monthly P&L is calculated from the transaction register rather than spreadsheet formulas. Delivery-related income/expenses can be linked to a delivery for contribution reporting. Receipts and invoices are stored in the private `truck-documents` bucket.
+Configurable income and expense categories feed one transaction register. P&L is calculated from database transactions rather than spreadsheet formulas. Delivery income, fuel and maintenance are synchronized into the financial engine so users do not have to duplicate entries. Records are archived rather than casually deleted.
 
-## Historical migration rules
+## Historical migration
 
-Original spreadsheet references are preserved. Blank-amount companion rows are retained at GHS 0.00. Maintenance/repair/service descriptions take classification priority when a row also mentions fuel/top-up. Genuinely ambiguous historical rows are marked for review instead of silently discarded.
+Original spreadsheet references are preserved. Blank-amount companion rows remain at GHS 0.00. Maintenance/repair/service descriptions take classification priority when a row also mentions fuel/top-up. The historical migration was reconciled against all dated source rows before production hardening.
+
+## Releases
+
+See `CHANGELOG.md` for release history and `PRODUCTION.md` for production checks and deployment procedures. Semantic Versioning is used.
 
 ## CI
 
-GitHub Actions builds `main`, `develop`, and pull requests to catch TypeScript/Vite build failures before deployment.
+GitHub Actions and Vercel preview builds validate changes before they are merged to `main`.
