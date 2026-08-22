@@ -1,1 +1,1 @@
-export {default} from './AppRoot';
+export {default} from './AppV3';
