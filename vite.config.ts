@@ -6,25 +6,32 @@ export default defineConfig({
   plugins:[
     react(),
     VitePWA({
-      registerType:'autoUpdate',
-      workbox:{navigateFallback:'/',cleanupOutdatedCaches:true},
+      registerType:'prompt',
+      includeAssets:['icons/acs-truck.svg'],
+      workbox:{navigateFallback:'/',cleanupOutdatedCaches:true,clientsClaim:true,skipWaiting:false},
       manifest:{
+        id:'/',
         name:'ACS Truck Operations',
         short_name:'ACS Truck',
-        description:'Delivery, fleet, fuel, maintenance and profitability operations',
+        description:'Delivery, fleet, income, expense, maintenance and profitability operations for ACS.',
         theme_color:'#0b1220',
         background_color:'#f6f7f9',
         display:'standalone',
+        display_override:['window-controls-overlay','standalone','minimal-ui'],
         orientation:'any',
         start_url:'/',
         scope:'/',
-        categories:['business','productivity'],
+        categories:['business','productivity','finance'],
+        icons:[{src:'/icons/acs-truck.svg',sizes:'any',type:'image/svg+xml',purpose:'any maskable'}],
         shortcuts:[
-          {name:'Deliveries',short_name:'Deliveries',url:'/?view=deliveries'},
-          {name:'New expense',short_name:'Expense',url:'/?view=transactions'}
+          {name:'Dashboard',short_name:'Dashboard',url:'/?view=dashboard'},
+          {name:'Income',short_name:'Income',url:'/?view=income'},
+          {name:'Expenses',short_name:'Expenses',url:'/?view=expenses'},
+          {name:'Reports',short_name:'Reports',url:'/?view=reports'}
         ]
       }
     })
   ],
+  build:{sourcemap:false,target:'es2021'},
   server:{host:true}
 });
