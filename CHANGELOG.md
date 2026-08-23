@@ -2,6 +2,20 @@
 
 ACS Truck Operations follows Semantic Versioning (`MAJOR.MINOR.PATCH`).
 
+## [1.2.0] - 2026-08-23
+
+### Operational refinement
+- Rebuilt the Profit & Loss PDF into a structured management statement with company identity, summary metrics, separate income and expense statements, net profit/loss, prior-period comparison and footer.
+- Standardized PDF financial values as `GHS 1,234.56` to avoid unsupported cedi-symbol glyph rendering.
+- Added custom From/To date-range reporting in addition to day, week, month, quarter, half-year and year presets.
+- Added fleet bulk status editing and duplicate-vehicle merge tools with confirmation and linked-record reassignment.
+- Consolidated spreadsheet-created false vehicle registrations into GS-826-10; active fleet now contains GS-1787-26 and GS-826-10.
+- Added quick Customer, Vendor and Vehicle creation directly from operational entry dialogs.
+- Added receipt/invoice/document selection during delivery, income/expense, fuel and maintenance entry; selected files attach after the record is saved.
+- Replaced invoice PDF output with a more structured company/customer/delivery document and GHS-safe currency formatting.
+- Made sortable table headers visually explicit and further reduced mobile record-card density.
+- Bumped production release identity to v1.2.0.
+
 ## [1.1.1] - 2026-08-23
 
 ### Dashboard reporting correction
@@ -48,6 +62,6 @@ ACS Truck Operations follows Semantic Versioning (`MAJOR.MINOR.PATCH`).
 - Docker/nginx and Vercel-ready frontend deployment.
 
 ## Version policy
-- **PATCH** (`1.1.1`) — bug fixes, copy/layout corrections, security patches with no workflow changes.
-- **MINOR** (`1.2.0`) — backward-compatible features such as new reports, approval workflows or notification capabilities.
+- **PATCH** (`1.2.1`) — bug fixes, copy/layout corrections, security patches with no workflow changes.
+- **MINOR** (`1.3.0`) — backward-compatible features such as new reports, approval workflows or notification capabilities.
 - **MAJOR** (`2.0.0`) — breaking workflow/schema changes or major platform redesigns.
