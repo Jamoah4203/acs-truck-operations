@@ -2,6 +2,15 @@
 
 ACS Truck Operations follows Semantic Versioning (`MAJOR.MINOR.PATCH`).
 
+## [1.1.1] - 2026-08-23
+
+### Dashboard reporting correction
+- Added a consistent management-period selector: This Month, This Year and All Time.
+- Changed the default dashboard management view to This Year.
+- Income, Expenses, Net P/L, Receivables, delivery counts, maintenance counts and recent records now use the same selected period.
+- Removed the misleading mix of latest-month P&L with cumulative receivables.
+- Added clear period labels so a zero-income month is not mistaken for zero historical income.
+
 ## [1.1.0] - 2026-08-22
 
 ### Production release
