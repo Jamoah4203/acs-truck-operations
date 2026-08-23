@@ -2,6 +2,19 @@
 
 ACS Truck Operations follows Semantic Versioning (`MAJOR.MINOR.PATCH`).
 
+## [1.2.1] - 2026-08-23
+
+### Startup performance and resilience
+- Added an immediate HTML/PWA startup shell so installed and browser launches never sit on a blank white screen while JavaScript initializes.
+- Added user-scoped Cache Storage for Supabase REST reads. Recent data can be rendered immediately during startup while a background refresh checks the server.
+- Changed later manual refreshes to network-first behavior with cached fallback, so Refresh still retrieves current data rather than repeatedly showing stale cache.
+- Added request timeouts and visible connectivity/data-refresh warnings instead of silent failures or empty registers.
+- Added explicit session/profile startup states and recoverable Retry/Sign-out actions when authentication or profile loading is slow or unavailable.
+- Added online/offline and successful-refresh status feedback.
+- Preserved the user's last main navigation page across ordinary app reopen/reload instead of always forcing Dashboard.
+- Added production indexes for active transactions, deliveries, fuel, maintenance and fleet list queries.
+- Data cache is isolated per authenticated user and cleared on sign-out.
+
 ## [1.2.0] - 2026-08-23
 
 ### Operational refinement
