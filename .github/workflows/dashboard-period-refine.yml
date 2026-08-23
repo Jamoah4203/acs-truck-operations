@@ -1,0 +1,85 @@
+name: Dashboard Period Refine
+
+on:
+  push:
+    branches: [fix/dashboard-period-aggregation-v2]
+
+permissions:
+  contents: write
+
+jobs:
+  refine:
+    if: ${{ !contains(github.event.head_commit.message, '[dashboard-period-refine]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/dashboard-period-aggregation-v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Refine dashboard aggregation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+
+          p=Path('src/ProductionApp.tsx')
+          s=p.read_text()
+          start=s.index('function Dashboard(')
+          end=s.index('\n\nfunction Income', start)
+          new=r'''function Dashboard({tx,deliveries,vehicles,maintenance,go}:any){
+ const[period,setPeriod]=useState<'month'|'year'|'all'>('year');
+ const now=new Date();
+ const inPeriod=(value:any)=>{if(period==='all')return true;if(!value)return false;const d=new Date(`${String(value).slice(0,10)}T00:00:00`);if(Number.isNaN(d.getTime()))return false;if(period==='year')return d.getFullYear()===now.getFullYear();return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()};
+ const periodTx=tx.filter((t:any)=>inPeriod(t.transaction_date));
+ const periodDeliveries=deliveries.filter((d:any)=>inPeriod(d.delivery_date));
+ const periodMaintenance=maintenance.filter((m:any)=>inPeriod(m.maintenance_date));
+ const income=periodTx.filter((t:any)=>t.direction==='income').reduce((s:number,t:any)=>s+Number(t.amount||0),0);
+ const expenses=periodTx.filter((t:any)=>t.direction==='expense').reduce((s:number,t:any)=>s+Number(t.amount||0),0);
+ const receivables=periodTx.filter((t:any)=>t.direction==='income').reduce((s:number,t:any)=>s+Math.max(0,Number(t.amount||0)-Number(t.paid_amount||0)),0);
+ const net=income-expenses;
+ const pending=periodDeliveries.filter((d:any)=>!['delivered','cancelled'].includes(d.status)).length;
+ const completed=periodDeliveries.filter((d:any)=>d.status==='delivered').length;
+ const label=period==='month'?now.toLocaleDateString('en-GH',{month:'long',year:'numeric'}):period==='year'?String(now.getFullYear()):'All recorded history';
+ const cards=[['Income',money(income),'income'],['Expenses',money(expenses),'expenses'],['Net P/L',money(net),'reports'],['Receivables',money(receivables),'reports'],['Pending',pending,'income'],['Completed',completed,'income'],['Fleet vehicles',vehicles.length,'fleet'],['Maintenance',periodMaintenance.length,'expenses']];
+ return <><div className="dashboard-period"><div><small>MANAGEMENT PERIOD</small><strong>{label}</strong></div><div className="dashboard-period-actions"><button className={period==='month'?'active':''} onClick={()=>setPeriod('month')}>This Month</button><button className={period==='year'?'active':''} onClick={()=>setPeriod('year')}>This Year</button><button className={period==='all'?'active':''} onClick={()=>setPeriod('all')}>All Time</button></div></div><section className="prod-metrics">{cards.map(([l,v,p])=><button key={String(l)} onClick={()=>go(p)}><small>{l}</small><strong className={l==='Net P/L'&&net<0?'neg':''}>{v}</strong><span className="metric-period">{l==='Fleet vehicles'?'Current fleet':label}</span><ChevronRight size={16}/></button>)}</section><section className="prod-split"><Panel title={`Recent deliveries · ${label}`}>{periodDeliveries.slice(0,6).map((d:any)=><div className="mini-row" key={d.id}><Truck size={16}/><span><b>{d.delivery_number}</b><small>{d.customers?.name||'No customer'} · {d.from_location||'—'} → {d.to_location||'—'}</small></span><Status v={d.status}/></div>)}{!periodDeliveries.length&&<p className="empty">No deliveries in this period.</p>}</Panel><Panel title={`Recent transactions · ${label}`}>{periodTx.slice(0,6).map((t:any)=><div className="mini-row" key={t.id}><Receipt size={16}/><span><b>{t.transaction_categories?.name||t.transaction_number}</b><small>{fmt(t.transaction_date)} · {t.description||''}</small></span><strong className={t.direction==='income'?'pos':'neg'}>{t.direction==='income'?'+':'-'}{money(t.amount)}</strong></div>)}{!periodTx.length&&<p className="empty">No transactions in this period.</p>}</Panel></section></>}
+'''
+          s=s[:start]+new+s[end:]
+          s=s.replace("const APP_VERSION='1.1.0';","const APP_VERSION='1.1.1';")
+          p.write_text(s)
+
+          css=Path('src/production.css')
+          c=css.read_text()
+          marker='/* dashboard period selector */'
+          if marker not in c:
+            c += r'''
+
+/* dashboard period selector */
+.dashboard-period{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 18px;padding:14px 16px;background:#fff;border:1px solid #e2e8f0;border-radius:16px}.dashboard-period>div:first-child{display:flex;flex-direction:column;gap:2px}.dashboard-period small{font-size:10px;font-weight:800;letter-spacing:.12em;color:#c87800}.dashboard-period strong{font-size:15px;color:#0f172a}.dashboard-period-actions{display:flex;gap:6px;flex-wrap:wrap}.dashboard-period-actions button{border:1px solid #dbe2ea;background:#f8fafc;color:#475569;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer}.dashboard-period-actions button.active{background:#0f172a;color:#fff;border-color:#0f172a}.metric-period{display:block;margin-top:4px;font-size:10px!important;color:#94a3b8!important;font-weight:600!important}@media(max-width:640px){.dashboard-period{align-items:flex-start;flex-direction:column;padding:12px}.dashboard-period-actions{width:100%;display:grid;grid-template-columns:repeat(3,1fr)}.dashboard-period-actions button{padding:8px 5px;font-size:11px}.prod-metrics{grid-template-columns:repeat(2,minmax(0,1fr))!important}.prod-metrics button{min-height:108px!important;padding:14px!important}.prod-metrics button strong{font-size:18px!important}.metric-period{font-size:9px!important}}
+'''
+          css.write_text(c)
+
+          pkg=Path('package.json')
+          data=json.loads(pkg.read_text())
+          data['version']='1.1.1'
+          pkg.write_text(json.dumps(data,separators=(',',':'))+'\n')
+
+          ch=Path('CHANGELOG.md')
+          t=ch.read_text()
+          entry='''## [1.1.1] - 2026-08-23\n\n### Dashboard reporting fix\n- Added This Month, This Year and All Time management periods to Dashboard.\n- Made This Year the default dashboard period.\n- Income, expenses, net P/L and receivables now use the same selected period.\n- Delivery and maintenance counts now follow the selected period while fleet count remains current-state.\n- Recent deliveries and transactions now follow the selected dashboard period.\n\n'''
+          if '## [1.1.1]' not in t:
+            pos=t.find('## [1.1.0]')
+            t=t[:pos]+entry+t[pos:]
+            ch.write_text(t)
+
+          Path('.github/workflows/dashboard-period-refine.yml').unlink()
+          PY
+          npm install
+          npm run typecheck
+          npm run build
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/ProductionApp.tsx src/production.css package.json CHANGELOG.md .github/workflows/dashboard-period-refine.yml
+          git commit -m "Fix dashboard period aggregation v1.1.1 [dashboard-period-refine]"
+          git push origin HEAD:fix/dashboard-period-aggregation-v2
