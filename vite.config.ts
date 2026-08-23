@@ -6,9 +6,14 @@ export default defineConfig({
   plugins:[
     react(),
     VitePWA({
-      registerType:'prompt',
+      registerType:'autoUpdate',
       includeAssets:['icons/acs-truck.svg'],
-      workbox:{navigateFallback:'/',cleanupOutdatedCaches:true,clientsClaim:true,skipWaiting:false},
+      workbox:{
+        navigateFallback:'/',
+        cleanupOutdatedCaches:true,
+        clientsClaim:true,
+        skipWaiting:true
+      },
       manifest:{
         id:'/',
         name:'ACS Truck Operations',
