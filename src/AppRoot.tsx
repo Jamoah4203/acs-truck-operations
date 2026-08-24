@@ -1,40 +1,13 @@
 import {FormEvent,useEffect,useState} from 'react';
 import {LogOut,RefreshCw,ShieldAlert,Truck} from 'lucide-react';
-import ProductionApp from './ProductionApp';
-import AdminRefinements from './AdminRefinements';
-import DashboardPeriodManager from './DashboardPeriodManager';
-import ReportsV12 from './ReportsV12';
-import OperationalRefinementsV12 from './OperationalRefinementsV12';
-import InvoiceV12Override from './InvoiceV12Override';
-import VersionV12 from './VersionV12';
+import AppV13 from './v13/AppV13';
 import PWAControls from './PWAControls';
 import RuntimeUX from './RuntimeUX';
 import {clearDataCache,supabase} from './lib/supabase';
+import type {Profile} from './v13/types';
 
-type Profile={id:string;full_name:string|null;phone:string|null;role:'admin'|'operations'|'accounts'|'driver';active:boolean};
 const wait=(ms:number)=>new Promise<never>((_,reject)=>setTimeout(()=>reject(new Error('The server is taking longer than expected to respond.')),ms));
-
-export default function AppRoot(){
- const[session,setSession]=useState<any>(undefined),[profile,setProfile]=useState<Profile|null>(null),[checking,setChecking]=useState(true),[accessError,setAccessError]=useState('');
- useEffect(()=>{
-  let active=true;
-  Promise.race([supabase.auth.getSession(),wait(8000)]).then((r:any)=>{if(active)setSession(r.data?.session||null)}).catch(()=>{if(active){setSession(null);setAccessError('We could not restore your session. Check your connection and try again.')}});
-  const{data:{subscription}}=supabase.auth.onAuthStateChange((_e,s)=>setSession(s));return()=>{active=false;subscription.unsubscribe()}
- },[]);
- useEffect(()=>{
-  if(session===undefined)return;
-  if(!session){setProfile(null);setChecking(false);return}
-  let active=true;setChecking(true);setAccessError('');
-  Promise.race([supabase.from('profiles').select('id,full_name,phone,role,active').eq('id',session.user.id).single(),wait(10000)]).then((r:any)=>{if(!active)return;const data=r.data,error=r.error;setProfile(data as Profile|null);setAccessError(error?.message||(!data?'Your user profile could not be loaded. Contact an administrator.':''));setChecking(false)}).catch((e:any)=>{if(active){setAccessError(e.message||'Account access could not be checked.');setChecking(false)}});
-  return()=>{active=false}
- },[session]);
- if(session===undefined)return <StartupState title="Opening ACS Truck" message="Restoring your secure session…"/>;
- if(checking&&session)return <StartupState title="Checking access" message="Loading your profile and permissions…"/>;
- if(!session)return <><Login/><PWAControls/><RuntimeUX/></>;
- if(accessError)return <AccessError message={accessError}/>;
- if(profile&&!profile.active)return <DisabledAccount/>;
- return profile?<><ProductionApp profile={profile} session={session}/><DashboardPeriodManager/><ReportsV12/><OperationalRefinementsV12 profile={profile}/><InvoiceV12Override/><VersionV12/><AdminRefinements profile={profile}/><PWAControls/><RuntimeUX/></>:null
-}
+export default function AppRoot(){const[session,setSession]=useState<any>(undefined),[profile,setProfile]=useState<Profile|null>(null),[checking,setChecking]=useState(true),[accessError,setAccessError]=useState('');useEffect(()=>{let active=true;Promise.race([supabase.auth.getSession(),wait(8000)]).then((r:any)=>{if(active)setSession(r.data?.session||null)}).catch(()=>{if(active){setSession(null);setAccessError('We could not restore your session. Check your connection and try again.')}});const{data:{subscription}}=supabase.auth.onAuthStateChange((_e,s)=>setSession(s));return()=>{active=false;subscription.unsubscribe()}},[]);useEffect(()=>{if(session===undefined)return;if(!session){setProfile(null);setChecking(false);return}let active=true;setChecking(true);setAccessError('');Promise.race([supabase.from('profiles').select('id,full_name,phone,role,active').eq('id',session.user.id).single(),wait(10000)]).then((r:any)=>{if(!active)return;setProfile(r.data as Profile|null);setAccessError(r.error?.message||(!r.data?'Your user profile could not be loaded. Contact an administrator.':''));setChecking(false)}).catch((e:any)=>{if(active){setAccessError(e.message||'Account access could not be checked.');setChecking(false)}});return()=>{active=false}},[session]);if(session===undefined)return <StartupState title="Opening ACS Truck" message="Restoring your secure session…"/>;if(checking&&session)return <StartupState title="Checking access" message="Loading your profile and permissions…"/>;if(!session)return <><Login/><PWAControls/><RuntimeUX/></>;if(accessError)return <AccessError message={accessError}/>;if(profile&&!profile.active)return <DisabledAccount/>;return profile?<><AppV13 profile={profile} session={session}/><PWAControls/><RuntimeUX/></>:null}
 function StartupState({title,message}:{title:string;message:string}){return <main className="access-check"><section><Truck size={30}/><h2>{title}</h2><p>{message}</p></section></main>}
 function Login(){const[email,setEmail]=useState(''),[password,setPassword]=useState(''),[busy,setBusy]=useState(false),[msg,setMsg]=useState('');async function submit(e:FormEvent){e.preventDefault();setBusy(true);setMsg('');try{const{error}=await supabase.auth.signInWithPassword({email,password});setMsg(error?.message||'')}catch{setMsg('Unable to reach the authentication service. Check your connection and try again.')}finally{setBusy(false)}}return <main className="prod-login"><section><div className="prod-login-logo"><Truck size={28}/></div><small>AVENUE CONSTRUCTION SUPPLY GH LTD</small><h1>ACS Truck Operations</h1><p>Fleet operations, accounting and reporting.</p><form onSubmit={submit}><label>Email<input type="email" value={email} onChange={e=>setEmail(e.target.value)} required/></label><label>Password<input type="password" value={password} onChange={e=>setPassword(e.target.value)} required/></label><button disabled={busy}>{busy?'Signing in…':'Sign in'}</button></form>{msg&&<div className="login-error">{msg}</div>}</section></main>}
 async function signOut(){await clearDataCache();await supabase.auth.signOut()}
