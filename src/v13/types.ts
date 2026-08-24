@@ -1,7 +1,9 @@
 export type Role='admin'|'operations'|'accounts'|'driver';
 export type Profile={id:string;full_name:string|null;phone:string|null;role:Role;active:boolean};
-export type PageState={page:number;pageSize:number;search:string;sort:string;ascending:boolean;from?:string;to?:string};
+export type PageState={page:number;pageSize:number;search:string;sort:string;ascending:boolean;from?:string;to?:string;categoryId?:string};
 export type PageResult<T>={rows:T[];count:number};
 export type Option={id:string;name:string};
-export type DashboardSummary={income:number;expenses:number;receivables:number;pending:number;completed:number;vehicles:number;maintenance:number;recent_deliveries:any[];recent_transactions:any[]};
+export type DashboardSummary={income:number;expenses:number;receivables:number;payables?:number;pending:number;completed:number;vehicles:number;maintenance:number;recent_deliveries:any[];recent_transactions:any[]};
 export type PnlReport={current:{income:number;expenses:number;receivables:number};previous:{income:number;expenses:number;receivables:number};income_categories:{name:string;amount:number}[];expense_categories:{name:string;amount:number}[]};
+export type BalanceSnapshot={date:string;cash_bank:number;other_current_assets:number;vehicle_book_value:number;other_noncurrent_assets:number;loans:number;other_liabilities:number;capital:number;notes?:string};
+export type BalanceSheet={asOf:string;snapshot?:BalanceSnapshot;receivables:number;payables:number;assets:{name:string;amount:number}[];liabilities:{name:string;amount:number}[];equity:{name:string;amount:number}[];totalAssets:number;totalLiabilities:number;totalEquity:number;netAssets:number};
