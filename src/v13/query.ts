@@ -1,0 +1,3 @@
+import {QueryClient} from '@tanstack/react-query';
+export const queryClient=new QueryClient({defaultOptions:{queries:{staleTime:60_000,gcTime:30*60_000,retry:2,refetchOnWindowFocus:false,refetchOnReconnect:true},mutations:{retry:0}}});
+export const qk={dashboard:(s:string,e:string)=>['dashboard',s,e] as const,deliveries:(p:any)=>['deliveries',p] as const,transactions:(d:string,p:any)=>['transactions',d,p] as const,fuel:(p:any)=>['fuel',p] as const,maintenance:(p:any)=>['maintenance',p] as const,vehicles:(p:any)=>['vehicles',p] as const,masters:['masters'] as const,pnl:(s:string,e:string,ps:string,pe:string)=>['pnl',s,e,ps,pe] as const};
