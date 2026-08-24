@@ -2,6 +2,20 @@
 
 ACS Truck Operations follows Semantic Versioning (`MAJOR.MINOR.PATCH`).
 
+## [1.4.0] - 2026-08-24
+
+### Management controls, users and accounting position
+- Replaced growing Income/Expense category tab rows with compact record-type selectors and category filters; categories are selected inside transaction forms.
+- Added a dashboard filter control with month, quarter, half-year, year, all-time and custom From/To periods; every dashboard metric and recent-record panel uses the same selected range.
+- Reduced dashboard cards, table rows, forms, mobile cards, headers, margins and padding to keep operational screens dense and readable.
+- Added selectable-column Excel `.xlsx` export for deliveries, income transactions, fuel, maintenance, general expenses and fleet records, preserving active search/date/category filters.
+- Added administrator Add User workflow with email, full name, phone, role and generated/manual temporary password, plus role changes, activation/deactivation and password-reset email actions.
+- Added financial balance snapshots in Settings for cash/bank, current assets, vehicle/equipment book value, non-current assets, loans, other liabilities and capital.
+- Added Balance Sheet reporting with point-in-time Assets, Liabilities and Equity; receivables and payables are calculated automatically from outstanding transaction balances.
+- Added Payables to dashboard management metrics.
+- Made master-data loading role-aware so driver sessions do not request restricted vendor data.
+- Bumped the installable PWA release identity to v1.4.0.
+
 ## [1.3.0] - 2026-08-24
 
 ### Frontend consolidation and production architecture
@@ -97,6 +111,6 @@ ACS Truck Operations follows Semantic Versioning (`MAJOR.MINOR.PATCH`).
 - Docker/nginx and Vercel-ready frontend deployment.
 
 ## Version policy
-- **PATCH** (`1.3.1`) — bug fixes, copy/layout corrections and security patches with no workflow changes.
-- **MINOR** (`1.4.0`) — backward-compatible features and workflow improvements.
+- **PATCH** (`1.4.1`) — bug fixes, copy/layout corrections and security patches with no workflow changes.
+- **MINOR** (`1.5.0`) — backward-compatible features and workflow improvements.
 - **MAJOR** (`2.0.0`) — breaking workflow/schema changes or a major platform redesign.
