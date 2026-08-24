@@ -8,6 +8,7 @@ import {qk,queryClient} from './query';
 import {useLiveInvalidation} from './live';
 import type {Profile} from './types';
 import './v13.css';
+import './v14.css';
 
 const DashboardPage=lazy(()=>import('./DashboardPage'));const IncomePage=lazy(()=>import('./IncomePage'));const ExpensesPage=lazy(()=>import('./ExpensesPage'));const ReportsPage=lazy(()=>import('./ReportsPage'));const FleetPage=lazy(()=>import('./FleetPage'));const SettingsPage=lazy(()=>import('./SettingsPage'));
 const VERSION='1.4.0';
