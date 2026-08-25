@@ -2,6 +2,18 @@
 
 ACS Truck Operations follows Semantic Versioning (`MAJOR.MINOR.PATCH`).
 
+## [1.4.1] - 2026-08-25
+
+### Mobile-first UX, documents and storage hardening
+- Refined phone/tablet layouts, filters, modal behavior, Settings navigation, dashboard card balance and mobile record density.
+- Reworked invoice and P&L document presentation and company-logo placement.
+- Hardened Supabase-backed attachments so receipts, invoices, proof of delivery, photos and maintenance documents persist centrally across devices.
+- Added document metadata/classification, entity indexes and unique bucket/path protection.
+- Added role-aware database and Storage RLS so authorized staff can open attachments without depending on the uploader's device.
+- Added record-detail upload/open/download controls and automatic secure signed access.
+- Added upload validation and orphan-file cleanup when metadata persistence fails.
+- Confirmed company branding uses the private server-side `company-assets` bucket and stores the shared `logo_path` in company settings.
+
 ## [1.4.0] - 2026-08-24
 
 ### Management controls, users and accounting position
