@@ -1,7 +1,7 @@
 import {useEffect,useState} from 'react';
 import {Download,RefreshCw,WifiOff,X} from 'lucide-react';
 
-const APP_VERSION='1.4.0';
+const APP_VERSION='1.4.1';
 type InstallPromptEvent=Event&{prompt:()=>Promise<void>;userChoice:Promise<{outcome:'accepted'|'dismissed'}>};
 
 export default function PWAControls(){const[installEvent,setInstallEvent]=useState<InstallPromptEvent|null>(null),[installed,setInstalled]=useState(false),[online,setOnline]=useState(navigator.onLine),[updateReady,setUpdateReady]=useState(false),[iosHelp,setIosHelp]=useState(false);
