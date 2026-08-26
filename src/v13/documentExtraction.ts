@@ -4,13 +4,15 @@ export type DocumentExtraction={document_type:string|null;date:string|null;refer
 
 const toBase64=(file:File)=>new Promise<string>((resolve,reject)=>{const r=new FileReader();r.onerror=()=>reject(new Error('The selected document could not be read.'));r.onload=()=>resolve(String(r.result).split(',')[1]||'');r.readAsDataURL(file)});
 
+async function edgeErrorMessage(error:any){try{const res=error?.context;if(res instanceof Response){const body=await res.clone().json();if(body?.error)return String(body.error)}}catch{}return error?.message||'The document could not be analysed.'}
+
 export async function analyzeDocument(file:File):Promise<DocumentExtraction>{
  if(!file)throw new Error('Choose a document first.');
  if(file.size>6_000_000)throw new Error('Use a document smaller than 6 MB for automatic analysis.');
  if(!(file.type.startsWith('image/')||file.type==='application/pdf'))throw new Error('Automatic analysis currently supports PDF and image files.');
  const data_base64=await toBase64(file);
  const{data,error}=await supabase.functions.invoke('extract-document',{body:{file_name:file.name,mime_type:file.type,data_base64}});
- if(error)throw new Error(error.message||'The document could not be analysed.');
+ if(error)throw new Error(await edgeErrorMessage(error));
  if(data?.error)throw new Error(data.error);
  if(!data?.extracted)throw new Error('No usable fields were found in this document.');
  return data.extracted as DocumentExtraction;
