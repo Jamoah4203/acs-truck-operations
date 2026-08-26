@@ -42,7 +42,7 @@ export async function linkedRecord(row:any){
 }
 
 export async function recentActivity(limit=12){
- const{data,error}=await supabase.from('audit_logs').select('id,actor_id,table_name,record_id,action,created_at,profiles:actor_id(full_name,role)').order('created_at',{ascending:false}).limit(limit);fail(error);return data||[];
+ const{data,error}=await supabase.from('audit_logs').select('id,actor_id,table_name,record_id,action,created_at,profiles!audit_logs_actor_id_fkey(full_name,role)').order('created_at',{ascending:false}).limit(limit);fail(error);return data||[];
 }
 
 export async function reportBreakdown(start:string,end:string){
@@ -50,7 +50,7 @@ export async function reportBreakdown(start:string,end:string){
  const rows:any[]=(data||[]) as any[];const group=(key:'driver_id'|'vehicle_id'|'category_id',label:(r:any)=>string)=>{const m=new Map<string,{name:string,income:number,expense:number}>();for(const r of rows){const id=String(r[key]||'unassigned'),name=label(r)||'Unassigned',x=m.get(id)||{name,income:0,expense:0};x[r.direction==='income'?'income':'expense']+=Number(r.amount||0);m.set(id,x)}return[...m.values()].map(x=>({...x,net:x.income-x.expense})).sort((a,b)=>Math.abs(b.net)-Math.abs(a.net))};return{drivers:group('driver_id',r=>r.profiles?.full_name||'Unassigned'),vehicles:group('vehicle_id',r=>r.vehicles?.registration_number||'Unassigned'),categories:group('category_id',r=>r.transaction_categories?.name||'Unclassified')};
 }
 
-export async function adminUsers(){const{data,error}=await supabase.from('profiles').select('id,full_name,phone,role,active,can_view_dashboard,history_months,default_vehicle_id,vehicles:default_vehicle_id(registration_number)').order('full_name');fail(error);return data||[]}
+export async function adminUsers(){const{data,error}=await supabase.from('profiles').select('id,full_name,phone,role,active,can_view_dashboard,history_months,default_vehicle_id,vehicles!profiles_default_vehicle_id_fkey(registration_number)').order('full_name');fail(error);return data||[]}
 export async function updateUserAccess(id:string,payload:Partial<Profile>){const{error}=await supabase.from('profiles').update(payload).eq('id',id);fail(error)}
 export async function paymentAccounts(){const{data,error}=await supabase.from('payment_accounts').select('*').order('is_default',{ascending:false}).order('name');fail(error);return data||[]}
 export async function savePaymentAccount(payload:any,id?:string){if(payload.is_default){await supabase.from('payment_accounts').update({is_default:false}).neq('id',id||'00000000-0000-0000-0000-000000000000')}const q=id?supabase.from('payment_accounts').update(payload).eq('id',id):supabase.from('payment_accounts').insert(payload);const{data,error}=await q.select('*').single();fail(error);return data}
