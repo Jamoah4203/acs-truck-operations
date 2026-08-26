@@ -51,7 +51,7 @@ export async function reportBreakdown(start:string,end:string){
 }
 
 export async function adminUsers(){const{data,error}=await supabase.from('profiles').select('id,full_name,phone,role,active,can_view_dashboard,history_months,default_vehicle_id,vehicles!profiles_default_vehicle_id_fkey(registration_number)').order('full_name');fail(error);return data||[]}
-export async function updateUserAccess(id:string,payload:Partial<Profile>){const{error}=await supabase.from('profiles').update(payload).eq('id',id);fail(error)}
+export async function updateUserAccess(id:string,payload:Partial<Profile>){const{error}=await supabase.rpc('admin_update_user_access',{p_user_id:id,p_role:payload.role,p_active:payload.active,p_can_view_dashboard:payload.can_view_dashboard,p_history_months:payload.history_months??null,p_default_vehicle_id:payload.default_vehicle_id??null});fail(error)}
 export async function paymentAccounts(){const{data,error}=await supabase.from('payment_accounts').select('*').order('is_default',{ascending:false}).order('name');fail(error);return data||[]}
 export async function savePaymentAccount(payload:any,id?:string){if(payload.is_default){await supabase.from('payment_accounts').update({is_default:false}).neq('id',id||'00000000-0000-0000-0000-000000000000')}const q=id?supabase.from('payment_accounts').update(payload).eq('id',id):supabase.from('payment_accounts').insert(payload);const{data,error}=await q.select('*').single();fail(error);return data}
 export async function setDefaultVehicle(id:string){const a=await supabase.from('vehicles').update({is_default:false}).eq('is_default',true);fail(a.error);const b=await supabase.from('vehicles').update({is_default:true}).eq('id',id);fail(b.error)}
