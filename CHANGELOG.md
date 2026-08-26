@@ -2,6 +2,21 @@
 
 ACS Truck Operations follows Semantic Versioning (`MAJOR.MINOR.PATCH`).
 
+## [1.5.0] - 2026-08-26
+
+### Workflow, access and defaults redesign
+- Added administrator-controlled Dashboard visibility and per-user history windows; driver accounts default to current-month history and the limit is enforced in Supabase RLS, not only hidden in the UI.
+- Added per-user truck assignment plus a global default truck. Forms preselect the assigned/default truck but users may change it when authorized.
+- Added configurable payment accounts (Cash, MoMo, Bank and custom accounts) with a single default account; new financial entries default to Unpaid.
+- Replaced separate Income record-type tables with one unified income ledger containing deliveries, external deliveries and other income, with category/date/search/sort filters.
+- Replaced separate Fuel/Maintenance/Other Expense tables with one unified expense ledger and category-driven add workflow.
+- Added one prominent Add Income / Add Expense action; category choice determines the correct specialised form.
+- Fixed inline Customer/Vendor creation by removing invalid nested forms that could submit/refresh the parent dialog.
+- Added local unsaved-form drafts so a browser/PWA reload does not force staff to retype the whole record; attachments are selected before save and uploaded after the record ID is confirmed.
+- Added driver/truck/category operational analysis reports and recent activity/audit feed on the Dashboard.
+- Added Admin controls for dashboard access, history limits, driver/truck assignment, system default truck and payment-account configuration.
+- Added a database guard preventing non-admin users from changing role/access/default-truck fields on their own profile.
+
 ## [1.4.1] - 2026-08-25
 
 ### Mobile-first UX, documents and storage hardening

@@ -1,5 +1,5 @@
 export type Role='admin'|'operations'|'accounts'|'driver';
-export type Profile={id:string;full_name:string|null;phone:string|null;role:Role;active:boolean};
+export type Profile={id:string;full_name:string|null;phone:string|null;role:Role;active:boolean;can_view_dashboard:boolean;history_months:number|null;default_vehicle_id:string|null};
 export type PageState={page:number;pageSize:number;search:string;sort:string;ascending:boolean;from?:string;to?:string;categoryId?:string};
 export type PageResult<T>={rows:T[];count:number};
 export type Option={id:string;name:string};
