@@ -6,13 +6,13 @@ export default defineConfig({
   plugins:[
     react(),
     VitePWA({
-      registerType:'autoUpdate',
+      registerType:'prompt',
       includeAssets:['icons/acs-truck.svg'],
       workbox:{
         navigateFallback:'/',
         cleanupOutdatedCaches:true,
-        clientsClaim:true,
-        skipWaiting:true
+        clientsClaim:false,
+        skipWaiting:false
       },
       manifest:{
         id:'/',

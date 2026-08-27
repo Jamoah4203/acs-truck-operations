@@ -1,0 +1,16 @@
+{
+  "version": "1.6.0",
+  "released_at": "2026-08-27",
+  "title": "Notifications & visible updates",
+  "summary": "ACS Truck now tells users when the app changes and when operational events need their attention.",
+  "changes": [
+    "New notification bell with unread counts and a role-aware notification inbox.",
+    "Drivers receive delivery assignment and delivery-status alerts relevant to them.",
+    "Accounts receive delivery-completion, payment, income and expense alerts that need financial attention.",
+    "Operations and Admin receive delivery and maintenance operational alerts.",
+    "Access or role changes notify the affected user.",
+    "PWA updates now ask Update now or Later instead of activating silently.",
+    "Users can review What changed before applying an update.",
+    "Optional browser alerts are available while ACS Truck is running in the browser or installed PWA."
+  ]
+}
